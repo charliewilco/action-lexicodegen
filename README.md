@@ -50,7 +50,7 @@ Inputs:
 | --- | --- | --- |
 | `version` | `latest` | Lexicodegen release tag to install. Accepts `v0.1.0` or `0.1.0`. |
 | `install-dir` | `${{ runner.temp }}/lexicodegen` | Directory where the binary is installed. |
-| `github-token` | `${{ github.token }}` | Token used for GitHub release API requests. |
+| `github-token` | `github.token` | Token used for GitHub release API requests. Leave empty to use the workflow token. |
 | `verify` | `true` | Run `lexicodegen --version` after installation. |
 
 Outputs:
@@ -84,7 +84,7 @@ Inputs:
 | `extra-args` | empty | Extra raw CLI arguments appended to the command. |
 | `working-directory` | `.` | Directory where `lexicodegen` runs. |
 | `install-dir` | `${{ runner.temp }}/lexicodegen` | Directory where the binary is installed. |
-| `github-token` | `${{ github.token }}` | Token used for GitHub release API requests. |
+| `github-token` | `github.token` | Token used for GitHub release API requests. Leave empty to use the workflow token. |
 | `verify` | `true` | Run `lexicodegen --version` after installation. |
 
 ## Release Tags

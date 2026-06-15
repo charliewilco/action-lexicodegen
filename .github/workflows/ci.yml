@@ -37,6 +37,12 @@ jobs:
         with:
           version: v0.1.0
 
+      - name: Install latest lexicodegen
+        uses: ./
+        with:
+          version: latest
+          install-dir: ${{ runner.temp }}/lexicodegen-latest
+
       - name: Verify installed binary
         shell: bash
         run: |

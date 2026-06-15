@@ -38,7 +38,7 @@ inputs:
   github-token:
     description: GitHub token used for release API requests. Public releases work without this, but a token avoids low unauthenticated rate limits.
     required: false
-    default: ${{ github.token }}
+    default: ""
   verify:
     description: Run lexicodegen --version after installation.
     required: false
@@ -60,7 +60,7 @@ runs:
       env:
         INPUT_VERSION: ${{ inputs.version }}
         INPUT_INSTALL_DIR: ${{ inputs.install-dir }}
-        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token || github.token }}
         INPUT_VERIFY: ${{ inputs.verify }}
       run: ${{ github.action_path }}/../scripts/install.sh
 
