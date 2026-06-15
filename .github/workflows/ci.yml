@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test action on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Check shell syntax
+        shell: bash
+        run: |
+          bash -n ./scripts/install.sh
+          bash -n ./scripts/run.sh
+
+      - name: Install lexicodegen
+        id: setup
+        uses: ./
+        with:
+          version: v0.1.0
+
+      - name: Verify installed binary
+        shell: bash
+        run: |
+          test -x "${{ steps.setup.outputs.path }}"
+          lexicodegen --version
+
+      - name: Run lexicodegen
+        uses: ./run
+        with:
+          version: v0.1.0
+          sources: ./testdata/lexicons
+          output: ${{ runner.temp }}/generated
+
+      - name: Verify generated output
+        shell: bash
+        run: |
+          test -f "${{ runner.temp }}/generated/Models.swift"
+          test -f "${{ runner.temp }}/generated/Endpoints.swift"
+          test -f "${{ runner.temp }}/generated/AppBskyFeed.generated.swift"

@@ -1,0 +1,76 @@
+name: Run Lexicodegen
+description: Install lexicodegen and run it against configured lexicon sources.
+author: charliewilco
+
+branding:
+  icon: play
+  color: blue
+
+inputs:
+  version:
+    description: Lexicodegen release tag to install, such as v0.1.0. Use latest for the latest published release.
+    required: false
+    default: latest
+  sources:
+    description: Newline-separated lexicon sources passed before flags. Ignored when config is set.
+    required: false
+    default: ./lexicons
+  output:
+    description: Swift output directory passed as --output. Ignored when config is set and output is empty.
+    required: false
+    default: ./output/swift
+  config:
+    description: Optional lexicodegen config file path. When set, the action runs lexicodegen --config <config>.
+    required: false
+    default: ""
+  extra-args:
+    description: Extra raw CLI arguments appended to the lexicodegen command.
+    required: false
+    default: ""
+  working-directory:
+    description: Directory where lexicodegen should run.
+    required: false
+    default: .
+  install-dir:
+    description: Directory where the lexicodegen binary should be installed.
+    required: false
+    default: ${{ runner.temp }}/lexicodegen
+  github-token:
+    description: GitHub token used for release API requests. Public releases work without this, but a token avoids low unauthenticated rate limits.
+    required: false
+    default: ${{ github.token }}
+  verify:
+    description: Run lexicodegen --version after installation.
+    required: false
+    default: "true"
+
+outputs:
+  path:
+    description: Installed lexicodegen binary path.
+    value: ${{ steps.install.outputs.path }}
+  version:
+    description: Installed lexicodegen version output.
+    value: ${{ steps.install.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - id: install
+      shell: bash
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+        INPUT_INSTALL_DIR: ${{ inputs.install-dir }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
+        INPUT_VERIFY: ${{ inputs.verify }}
+      run: ${{ github.action_path }}/../scripts/install.sh
+
+    - name: Run lexicodegen
+      shell: bash
+      env:
+        INPUT_SOURCES: ${{ inputs.sources }}
+        INPUT_OUTPUT: ${{ inputs.output }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_EXTRA_ARGS: ${{ inputs.extra-args }}
+        INPUT_WORKING_DIRECTORY: ${{ inputs.working-directory }}
+        LEXICODEGEN_PATH: ${{ steps.install.outputs.path }}
+      run: ${{ github.action_path }}/../scripts/run.sh
